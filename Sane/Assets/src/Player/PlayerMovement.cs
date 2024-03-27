@@ -8,15 +8,30 @@ public class PlayerMovement : MonoBehaviour {
     public float speed = 10;
     public float runSpeed = 15;
 
+    public float acceleration = 10;
+
+    private Vector3 _currentDisplacement;
+    private Vector3 _targetDisplacement;
+
     private void Update() {
+        Move();
+        Crouch();
+    }
+
+    private void Move() {
         float forward = inputManager.GetPlayerMovementForward();
         float right = inputManager.GetPlayerMovementRight();
 
-        Vector3 displacement = transform.right * right + transform.forward * forward;
-        displacement *= inputManager.IsPlayerRunning() ? runSpeed : speed;
+        _targetDisplacement = transform.right * right + transform.forward * forward;
+        _targetDisplacement *= inputManager.ShouldPlayerRun() ? runSpeed : speed;
 
-        transform.localScale = new Vector3(1, inputManager.IsPlayerCrouching() ? 0.72618f : 1f, 1);
+        _currentDisplacement =
+            Vector3.MoveTowards(_currentDisplacement, _targetDisplacement, acceleration * Time.deltaTime);
 
-        rb.velocity = new Vector3(displacement.x, rb.velocity.y, displacement.z);
+        rb.velocity = new Vector3(_currentDisplacement.x, rb.velocity.y, _currentDisplacement.z);
+    }
+
+    private void Crouch() {
+        transform.localScale = new Vector3(1, inputManager.ShouldPlayerCrouch() ? 0.72618f : 1f, 1);
     }
 }

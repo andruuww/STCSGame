@@ -35,7 +35,6 @@ public class SmoothLook : MonoBehaviour {
 
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, minVerticalAngle, maxVerticalAngle);
-        print(_xRotation);
         _vTarget.x = _xRotation * Mathf.Deg2Rad;
     }
 
