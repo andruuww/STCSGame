@@ -6,32 +6,46 @@ public class RealisticCameraMovementController : MonoBehaviour {
     [SerializeField] private bool enable = true;
 
 
-    [SerializeField] [Range(0, 5)] private float footstepHeaviness = 1.0f;
-    [SerializeField] [Range(0, 1)] private float footstepGate = 0.99f;
+    [Header("Footstep")] [SerializeField] [Range(0, 5)]
+    private float footstepHeaviness = 1.0f;
 
-    [SerializeField] [Range(0, 1)] private float noiseAmp = 0.1f;
-    [SerializeField] [Range(0, 2)] private float noiseRoughness = 0.5f;
+    [SerializeField] [Range(0, 1)] private float footstepThreshold = 0.7f;
 
-    [SerializeField] [Range(0, 50f)] private float lerpSpeed = 10f;
-    [SerializeField] [Range(0, 20f)] private float decaySpeed = 10f;
+    [SerializeField] [Range(0, 1)] private float noiseAmp = 0.5f;
+    [SerializeField] [Range(0, 2)] private float noiseSpeed = 0.5f;
 
-    [SerializeField] [Range(0, 10f)] private float idleAmpRot = 0.0004f;
-    [SerializeField] [Range(0, 2f)] private float idleFreq = 2.0f;
+    [Header("Lerp Speed")] [SerializeField] [Range(0, 50f)]
+    private float lerpSpeed = 0.8f;
 
-    [SerializeField] [Range(0, 5f)] private float crouchingAmpTrans = 0.2f;
-    [SerializeField] [Range(0, 50f)] private float crouchingAmpRot = 1f;
-    [SerializeField] [Range(0, 30)] private float crouchingFreq = 2;
+    [SerializeField] [Range(0, 20f)] private float decaySpeed = 5f;
 
-    [SerializeField] [Range(0, 5f)] private float walkingAmpTrans = 0.0003f;
-    [SerializeField] [Range(0, 50f)] private float walkingAmpRot = 0.01f;
+    [Header("Idle Motion")] [SerializeField] [Range(0, 10f)]
+    private float idleAmpRot = 4f;
+
+    [SerializeField] [Range(0, 2f)] private float idleFreq = 1f;
+
+    [Header("Crouching Motion")] [SerializeField] [Range(0, 5f)]
+    private float crouchingAmpTrans = 0.2f;
+
+    [SerializeField] [Range(0, 50f)] private float crouchingAmpRot = 5f;
+    [SerializeField] [Range(0, 30)] private float crouchingFreq = 8;
+
+    [Header("Walking Motion")] [SerializeField] [Range(0, 5f)]
+    private float walkingAmpTrans = 0.25f;
+
+    [SerializeField] [Range(0, 50f)] private float walkingAmpRot = 8f;
     [SerializeField] [Range(0, 30f)] private float walkingFreq = 10.0f;
 
-    [SerializeField] [Range(0, 5f)] private float runningAmpTrans = 0.03f;
-    [SerializeField] [Range(0, 50f)] private float runningAmpRot = 0.01f;
+    [Header("Running Motion")] [SerializeField] [Range(0, 5f)]
+    private float runningAmpTrans = 1f;
+
+    [SerializeField] [Range(0, 50f)] private float runningAmpRot = 35f;
     [SerializeField] [Range(0, 30f)] private float runningFreq = 20.0f;
 
-    [SerializeField] [Range(0, 120)] private float walkingFOV = 60.0f;
-    [SerializeField] [Range(0, 120)] private float runningFOV = 70.0f;
+    [Header("Camera FOV")] [SerializeField] [Range(0, 120)]
+    private float walkingFOV = 60.0f;
+
+    [SerializeField] [Range(0, 120)] private float runningFOV = 75f;
 
     [SerializeField] private new Camera camera;
     public PlayerStateManager inputManager;
@@ -71,8 +85,8 @@ public class RealisticCameraMovementController : MonoBehaviour {
         // footstep animation code
         float direction = -Mathf.Sign(cosValue);
 
-        if (sinValue >= footstepGate) {
-            float footNoise = noise.snoise(new float2(time * noiseRoughness, 0)); // Use Simplex noise
+        if (sinValue >= footstepThreshold) {
+            float footNoise = noise.snoise(new float2(time * noiseSpeed, 0)); // Use Simplex noise
             rotation.z += (footstepHeaviness * direction +
                            footNoise * noiseAmp) * ampRot;
 

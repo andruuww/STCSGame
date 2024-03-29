@@ -3262,6 +3262,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 427227970971984203, guid: 781e0a26713414e45bd4b8ca9df544bd, type: 3}
+      propertyPath: walkingAmpTrans
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 427227970971984203, guid: 781e0a26713414e45bd4b8ca9df544bd, type: 3}
+      propertyPath: footstepThreshold
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 427227970971984207, guid: 781e0a26713414e45bd4b8ca9df544bd, type: 3}
       propertyPath: m_RootOrder
       value: 2
