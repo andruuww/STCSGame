@@ -1,21 +1,26 @@
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
-    public InputManager inputManager;
+    public PlayerStateManager inputManager;
 
     public Rigidbody rb;
 
-    public float speed = 10;
-    public float runSpeed = 15;
+    [SerializeField] [Range(0, 2)] private float standingHeight = 1.0f;
+    [SerializeField] [Range(0, 2)] private float crouchingHeight = 0.72618f;
+    [SerializeField] [Range(0, 1)] private float crouchingLerpSpeed = 0.1f;
 
-    public float acceleration = 10;
+    [SerializeField] [Range(0, 5)] private float walkSpeed = 2.1f;
+    [SerializeField] [Range(0, 5)] private float crouchSpeed = 1f;
+    [SerializeField] [Range(0, 5)] private float runSpeed = 3.5f;
+    [SerializeField] [Range(0, 25)] private float acceleration = 13;
+
 
     private Vector3 _currentDisplacement;
     private Vector3 _targetDisplacement;
 
     private void Update() {
+        CheckCrouch();
         Move();
-        Crouch();
     }
 
     private void Move() {
@@ -23,7 +28,24 @@ public class PlayerMovement : MonoBehaviour {
         float right = inputManager.GetPlayerMovementRight();
 
         _targetDisplacement = transform.right * right + transform.forward * forward;
-        _targetDisplacement *= inputManager.ShouldPlayerRun() ? runSpeed : speed;
+
+        float multiplier = 1;
+        switch (inputManager.GetPlayerState()) {
+            case PlayerState.Crouching:
+                multiplier = crouchSpeed;
+                break;
+            case PlayerState.Walking:
+                multiplier = walkSpeed;
+                break;
+            case PlayerState.Running:
+                multiplier = runSpeed;
+                break;
+            case PlayerState.Idle:
+                multiplier = 0;
+                break;
+        }
+
+        _targetDisplacement *= multiplier;
 
         _currentDisplacement =
             Vector3.MoveTowards(_currentDisplacement, _targetDisplacement, acceleration * Time.deltaTime);
@@ -31,7 +53,11 @@ public class PlayerMovement : MonoBehaviour {
         rb.velocity = new Vector3(_currentDisplacement.x, rb.velocity.y, _currentDisplacement.z);
     }
 
-    private void Crouch() {
-        transform.localScale = new Vector3(1, inputManager.ShouldPlayerCrouch() ? 0.72618f : 1f, 1);
+    private void CheckCrouch() {
+        float targetHeight = inputManager.ShouldPlayerCrouch() ? crouchingHeight : standingHeight;
+        transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(1, targetHeight, 1), crouchingLerpSpeed);
+        transform.localPosition = new Vector3(transform.localPosition.x,
+            transform.localScale.y + standingHeight,
+            transform.localPosition.z);
     }
 }
