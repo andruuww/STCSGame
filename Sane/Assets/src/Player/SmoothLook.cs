@@ -1,14 +1,15 @@
 using UnityEngine;
 
 public class SmoothLook : MonoBehaviour {
-    [SerializeField] private InputManager inputManager;
+    [SerializeField] private PlayerStateManager playerStateManager;
     [SerializeField] private float mouseSensitivity = 100;
 
-    [SerializeField] private new Camera camera;
     [SerializeField] private float cameraSpeed = 0.001f;
 
     [SerializeField] private float minVerticalAngle = -90;
     [SerializeField] private float maxVerticalAngle = 90;
+
+    public Transform cameraRotation;
 
     private Quaternion _hTarget;
     private Quaternion _vTarget;
@@ -31,7 +32,7 @@ public class SmoothLook : MonoBehaviour {
     }
 
     private void HandleVertical() {
-        float mouseY = inputManager.GetMouseY() * Time.deltaTime * mouseSensitivity;
+        float mouseY = playerStateManager.GetMouseY() * Time.deltaTime * mouseSensitivity;
 
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, minVerticalAngle, maxVerticalAngle);
@@ -39,15 +40,16 @@ public class SmoothLook : MonoBehaviour {
     }
 
     private void HandleHorizontal() {
-        float mouseX = inputManager.GetMouseX() * Time.deltaTime * mouseSensitivity;
+        float mouseX = playerStateManager.GetMouseX() * Time.deltaTime * mouseSensitivity;
         _yRotation += mouseX * 2;
         _hTarget = Quaternion.Euler(0, _yRotation, 0);
     }
 
     private void LerpToTarget() {
-        camera.transform.localRotation =
-            Quaternion.Slerp(camera.transform.localRotation, _vTarget, cameraSpeed * Time.deltaTime);
+        cameraRotation.localRotation =
+            Quaternion.Slerp(cameraRotation.localRotation, _vTarget, cameraSpeed * Time.deltaTime);
 
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
+        transform.localRotation =
+            Quaternion.Slerp(transform.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
     }
 }

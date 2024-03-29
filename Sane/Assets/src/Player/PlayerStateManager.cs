@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class InputManager : MonoBehaviour {
+public class PlayerStateManager : MonoBehaviour {
     private PlayerInput playerInput;
 
     private void Awake() {
@@ -57,7 +57,7 @@ public class InputManager : MonoBehaviour {
     }
 
     public bool IsPlayerCrouching() {
-        return ShouldPlayerCrouch();
+        return ShouldPlayerCrouch() && IsPlayerMoving();
     }
 
     public bool IsPlayerWalking() {
