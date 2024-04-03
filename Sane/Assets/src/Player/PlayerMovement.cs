@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
-    public PlayerStateManager inputManager;
+    public PlayerStateManager playerState;
 
     public Rigidbody rb;
 
@@ -14,50 +14,48 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] [Range(0, 5)] private float runSpeed = 3.5f;
     [SerializeField] [Range(0, 25)] private float acceleration = 13;
 
+    public Transform body;
 
     private Vector3 _currentDisplacement;
     private Vector3 _targetDisplacement;
 
     private void Update() {
-        CheckCrouch();
         Move();
+        CheckCrouch();
     }
 
     private void Move() {
-        float forward = inputManager.GetPlayerMovementForward();
-        float right = inputManager.GetPlayerMovementRight();
+        float forward = playerState.GetPlayerMovementForward();
+        float right = playerState.GetPlayerMovementRight();
 
         _targetDisplacement = transform.right * right + transform.forward * forward;
 
-        float multiplier = 1;
-        switch (inputManager.GetPlayerState()) {
-            case PlayerState.Crouching:
-                multiplier = crouchSpeed;
+        float speedMult = 1;
+        switch (playerState.GetMovementState()) {
+            case MovementState.Crouching:
+                speedMult = crouchSpeed;
                 break;
-            case PlayerState.Walking:
-                multiplier = walkSpeed;
+            case MovementState.Walking:
+                speedMult = walkSpeed;
                 break;
-            case PlayerState.Running:
-                multiplier = runSpeed;
+            case MovementState.Running:
+                speedMult = runSpeed;
                 break;
-            case PlayerState.Idle:
-                multiplier = 0;
+            case MovementState.Idle:
+                speedMult = 0;
                 break;
         }
 
-        _targetDisplacement *= multiplier;
 
         _currentDisplacement =
-            Vector3.MoveTowards(_currentDisplacement, _targetDisplacement, acceleration * Time.deltaTime);
+            Vector3.MoveTowards(_currentDisplacement, _targetDisplacement * speedMult, acceleration * Time.deltaTime);
 
         rb.velocity = new Vector3(_currentDisplacement.x, rb.velocity.y, _currentDisplacement.z);
     }
 
     private void CheckCrouch() {
-        float targetHeight = inputManager.ShouldPlayerCrouch() ? crouchingHeight : standingHeight;
-        transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(1, targetHeight, 1), crouchingLerpSpeed);
-        transform.localPosition = new Vector3(transform.localPosition.x,
-            transform.localScale.y + standingHeight,
-            transform.localPosition.z);
+        float targetHeight = playerState.ShouldPlayerCrouch() ? crouchingHeight : standingHeight;
+        body.localScale = Vector3.Lerp(body.localScale, new Vector3(1, targetHeight, 1), crouchingLerpSpeed);
+        body.transform.localPosition = new Vector3(0, body.localScale.y - standingHeight, 0);
     }
 }
