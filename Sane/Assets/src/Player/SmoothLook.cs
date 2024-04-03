@@ -47,9 +47,9 @@ public class SmoothLook : MonoBehaviour {
 
     private void LerpToTarget() {
         cameraRotation.localRotation =
-            Quaternion.Slerp(cameraRotation.localRotation, _vTarget, cameraSpeed * Time.deltaTime);
+            Quaternion.Lerp(cameraRotation.localRotation, _vTarget, cameraSpeed * Time.deltaTime);
 
         transform.localRotation =
-            Quaternion.Slerp(transform.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
+            Quaternion.Lerp(transform.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
     }
 }

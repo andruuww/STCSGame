@@ -1,10 +1,15 @@
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 public class PlayerStateManager : MonoBehaviour {
+    [Header("Ground Detection")]
+    [SerializeField] private float groundedDistance = 0.5f;
+    [SerializeField] private LayerMask groundLayer;
     private PlayerInput playerInput;
 
     private void Awake() {
         playerInput = new PlayerInput();
+        Application.targetFrameRate = 60;
     }
 
     private void OnEnable() {
@@ -68,18 +73,33 @@ public class PlayerStateManager : MonoBehaviour {
         return ShouldPlayerRun() && IsPlayerMoving();
     }
 
+    public bool IsGrounded() {
+        return Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundedDistance, groundLayer);
+    }
+
+    public MovementState GetMovementState() {
+        if (IsPlayerCrouching()) return MovementState.Crouching;
+        if (IsPlayerRunning()) return MovementState.Running;
+        if (IsPlayerWalking()) return MovementState.Walking;
+        return MovementState.Idle;
+    }
 
     public PlayerState GetPlayerState() {
-        if (IsPlayerCrouching()) return PlayerState.Crouching;
-        if (IsPlayerRunning()) return PlayerState.Running;
-        if (IsPlayerWalking()) return PlayerState.Walking;
-        return PlayerState.Idle;
+        return new PlayerState {
+            Movement = GetMovementState(),
+            IsGrounded = IsGrounded()
+        };
     }
 }
 
-public enum PlayerState {
+public enum MovementState {
     Idle,
     Walking,
     Running,
     Crouching
+}
+
+public struct PlayerState {
+    public MovementState Movement;
+    public bool IsGrounded;
 }

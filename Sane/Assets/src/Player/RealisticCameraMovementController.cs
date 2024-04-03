@@ -9,42 +9,36 @@ public class RealisticCameraMovementController : MonoBehaviour {
     [Header("Footstep")] [SerializeField] [Range(0, 5)]
     private float footstepHeaviness = 1.0f;
 
+    [Header("Footstep Motion")]
     [SerializeField] [Range(0, 1)] private float footstepThreshold = 0.7f;
-
     [SerializeField] [Range(0, 1)] private float noiseAmp = 0.5f;
     [SerializeField] [Range(0, 2)] private float noiseSpeed = 0.5f;
 
-    [Header("Lerp Speed")] [SerializeField] [Range(0, 50f)]
-    private float lerpSpeed = 0.8f;
-
+    [Header("Lerp Speed")]
+    [SerializeField] [Range(0, 50f)] private float lerpSpeed = 0.8f;
     [SerializeField] [Range(0, 20f)] private float decaySpeed = 5f;
 
-    [Header("Idle Motion")] [SerializeField] [Range(0, 10f)]
-    private float idleAmpRot = 4f;
-
+    [Header("Idle Motion")]
+    [SerializeField] [Range(0, 10f)] private float idleAmpRot = 4f;
     [SerializeField] [Range(0, 2f)] private float idleFreq = 1f;
 
-    [Header("Crouching Motion")] [SerializeField] [Range(0, 5f)]
-    private float crouchingAmpTrans = 0.2f;
-
+    [Header("Crouching Motion")]
+    [SerializeField] [Range(0, 5f)] private float crouchingAmpTrans = 0.2f;
     [SerializeField] [Range(0, 50f)] private float crouchingAmpRot = 5f;
     [SerializeField] [Range(0, 30)] private float crouchingFreq = 8;
 
-    [Header("Walking Motion")] [SerializeField] [Range(0, 5f)]
-    private float walkingAmpTrans = 0.25f;
-
+    [Header("Walking Motion")]
+    [SerializeField] [Range(0, 5f)] private float walkingAmpTrans = 0.25f;
     [SerializeField] [Range(0, 50f)] private float walkingAmpRot = 8f;
     [SerializeField] [Range(0, 30f)] private float walkingFreq = 10.0f;
 
-    [Header("Running Motion")] [SerializeField] [Range(0, 5f)]
-    private float runningAmpTrans = 1f;
-
+    [Header("Running Motion")]
+    [SerializeField] [Range(0, 5f)] private float runningAmpTrans = 1f;
     [SerializeField] [Range(0, 50f)] private float runningAmpRot = 35f;
     [SerializeField] [Range(0, 30f)] private float runningFreq = 20.0f;
 
-    [Header("Camera FOV")] [SerializeField] [Range(0, 120)]
-    private float walkingFOV = 60.0f;
-
+    [Header("Camera FOV")]
+    [SerializeField] [Range(0, 120)] private float walkingFOV = 60.0f;
     [SerializeField] [Range(0, 120)] private float runningFOV = 75f;
 
     [SerializeField] private new Camera camera;
@@ -109,23 +103,23 @@ public class RealisticCameraMovementController : MonoBehaviour {
 
 
     private void CheckMotion() {
-        PlayerState currentState = inputManager.GetPlayerState();
+        MovementState currentState = inputManager.GetMovementState();
         float freq = idleFreq; // Default frequency
 
         switch (currentState) {
-            case PlayerState.Crouching:
+            case MovementState.Crouching:
                 freq = crouchingFreq;
                 LerpAmp(crouchingAmpTrans, crouchingAmpRot);
                 break;
-            case PlayerState.Walking:
+            case MovementState.Walking:
                 freq = walkingFreq;
                 LerpAmp(walkingAmpTrans, walkingAmpRot);
                 break;
-            case PlayerState.Running:
+            case MovementState.Running:
                 freq = runningFreq;
                 LerpAmp(runningAmpTrans, runningAmpRot);
                 break;
-            case PlayerState.Idle:
+            case MovementState.Idle:
                 freq = idleFreq;
                 LerpAmp(0, idleAmpRot);
                 ResetPosition();
@@ -135,10 +129,10 @@ public class RealisticCameraMovementController : MonoBehaviour {
                 break;
         }
 
-        float targetFOV = currentState == PlayerState.Running ? runningFOV : walkingFOV;
+        float targetFOV = currentState == MovementState.Running ? runningFOV : walkingFOV;
         LerpFOV(targetFOV);
 
-        (Vector3 translation, Vector3 rotation) = currentState == PlayerState.Idle
+        (Vector3 translation, Vector3 rotation) = currentState == MovementState.Idle
             ? BreathingMotion(_currentAmpTrans, _currentAmpRot, freq)
             : FootStepMotion(_currentAmpTrans, _currentAmpRot, freq);
 
