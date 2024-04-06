@@ -7,8 +7,8 @@ public class RealisticCameraMovementController : MonoBehaviour {
 
 
     [Header("Camera Sway")]
-    [SerializeField] [Range(0, 50)] private float cameraSwayOnMovement = 35f;
-    [SerializeField] [Range(0, 0.1f)] private float cameraSwayOnLook = 0.025f;
+    [SerializeField] [Range(0, 50)] private float cameraSwayOnMovement = 20f;
+    [SerializeField] [Range(0, 0.1f)] private float cameraSwayOnLook = 0.015f;
 
     [Header("Footstep Motion")]
     [SerializeField] [Range(0, 5)] private float footstepHeaviness = 1.75f;
@@ -139,6 +139,7 @@ public class RealisticCameraMovementController : MonoBehaviour {
     private void CheckMotion() {
         MovementState currentState = playerState.GetMovementState();
         float freq = idleFreq; // Default frequency
+
 
         switch (currentState) {
             case MovementState.Crouching:

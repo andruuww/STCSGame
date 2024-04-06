@@ -5,44 +5,82 @@ public class PlayerStateManager : MonoBehaviour {
     [Header("Ground Detection")]
     [SerializeField] private float groundedDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
-    private PlayerInput playerInput;
+
+    public PlayerMovement playerMovement;
+    public SmoothLook smoothLook;
+
+    private PlayerInput _playerInput;
+    private bool lockMovement;
 
     private void Awake() {
-        playerInput = new PlayerInput();
+        playerMovement = GetComponent<PlayerMovement>();
+        smoothLook = GetComponent<SmoothLook>();
+
+        _playerInput = new PlayerInput();
         Application.targetFrameRate = 60;
     }
 
     private void OnEnable() {
-        playerInput.Enable();
+        _playerInput.Enable();
     }
 
     private void OnDisable() {
-        playerInput.Disable();
+        _playerInput.Disable();
     }
+
+    public void LockMovement() {
+        lockMovement = true;
+        playerMovement.Lock();
+    }
+
+    public void UnlockMovement() {
+        lockMovement = false;
+        playerMovement.Unlock();
+    }
+
+    public void LockCamera() {
+        smoothLook.Lock();
+    }
+
+    public void UnlockCamera() {
+        smoothLook.Unlock();
+    }
+
+
+    // player interact getters --------------------------------------------------------------------------------------------
+
+    public bool IsInteractPress() {
+        return _playerInput.Interactions.InteractPress.triggered;
+    }
+
+    public bool IsInteractDown() {
+        return _playerInput.Interactions.InteractDown.ReadValue<float>() != 0;
+    }
+
 
     // player input getters ------------------------------------------------------------------------------------------------
     public float GetPlayerMovementForward() {
-        return playerInput.Movement.Forward.ReadValue<float>();
+        return _playerInput.Movement.Forward.ReadValue<float>();
     }
 
     public float GetPlayerMovementRight() {
-        return playerInput.Movement.Right.ReadValue<float>();
+        return _playerInput.Movement.Right.ReadValue<float>();
     }
 
     public float GetMouseX() {
-        return playerInput.CameraLook.MouseX.ReadValue<float>();
+        return _playerInput.CameraLook.MouseX.ReadValue<float>();
     }
 
     public float GetMouseY() {
-        return playerInput.CameraLook.MouseY.ReadValue<float>();
+        return _playerInput.CameraLook.MouseY.ReadValue<float>();
     }
 
     public bool IsRunningButtonDown() {
-        return playerInput.Movement.Run.ReadValue<float>() != 0;
+        return _playerInput.Movement.Run.ReadValue<float>() != 0;
     }
 
     public bool IsCrouchingButtonDown() {
-        return playerInput.Movement.Crouch.ReadValue<float>() != 0;
+        return _playerInput.Movement.Crouch.ReadValue<float>() != 0;
     }
 
 
@@ -57,8 +95,8 @@ public class PlayerStateManager : MonoBehaviour {
     }
 
     public bool IsPlayerMoving() {
-        return playerInput.Movement.Forward.ReadValue<float>() != 0 ||
-               playerInput.Movement.Right.ReadValue<float>() != 0;
+        return GetPlayerMovementForward() != 0 ||
+               GetPlayerMovementRight() != 0;
     }
 
     public bool IsPlayerCrouching() {
@@ -78,6 +116,7 @@ public class PlayerStateManager : MonoBehaviour {
     }
 
     public MovementState GetMovementState() {
+        if (lockMovement) return MovementState.Idle;
         if (IsPlayerCrouching()) return MovementState.Crouching;
         if (IsPlayerRunning()) return MovementState.Running;
         if (IsPlayerWalking()) return MovementState.Walking;

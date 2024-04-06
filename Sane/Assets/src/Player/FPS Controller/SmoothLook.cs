@@ -10,12 +10,15 @@ public class SmoothLook : MonoBehaviour {
     [SerializeField] private float maxVerticalAngle = 90;
 
     public Transform cameraRotation;
+    public Transform body;
 
     private Quaternion _hTarget;
     private Quaternion _vTarget;
 
     private float _xRotation;
     private float _yRotation;
+
+    private bool locked;
 
     private void Start() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -25,6 +28,7 @@ public class SmoothLook : MonoBehaviour {
     }
 
     private void Update() {
+        if (locked) return;
         HandleVertical();
         HandleHorizontal();
 
@@ -49,7 +53,15 @@ public class SmoothLook : MonoBehaviour {
         cameraRotation.localRotation =
             Quaternion.Lerp(cameraRotation.localRotation, _vTarget, cameraSpeed * Time.deltaTime);
 
-        transform.localRotation =
-            Quaternion.Lerp(transform.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
+        body.localRotation =
+            Quaternion.Lerp(body.localRotation, _hTarget, cameraSpeed * Time.deltaTime);
+    }
+
+    public void Lock() {
+        locked = true;
+    }
+
+    public void Unlock() {
+        locked = false;
     }
 }
