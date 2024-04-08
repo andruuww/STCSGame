@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
     public PlayerStateManager playerState;
 
-    public CharacterController characterController;
+    public Rigidbody rb;
 
     [SerializeField] [Range(0, 2)] private float standingHeight = 1.0f;
     [SerializeField] [Range(0, 2)] private float crouchingHeight = 0.5f;
@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour {
     public Transform bodyHeight;
     public Transform body;
 
+    public CapsuleCollider cc;
+
     private Vector3 _currentDisplacement;
 
     private bool _locked;
@@ -25,7 +27,7 @@ public class PlayerMovement : MonoBehaviour {
 
     private float _verticalSpeed;
 
-    private void Update() {
+    private void FixedUpdate() {
         if (_locked) return;
         Move();
         CheckCrouch();
@@ -56,25 +58,23 @@ public class PlayerMovement : MonoBehaviour {
         _currentDisplacement = Vector3.MoveTowards(_currentDisplacement, _targetDisplacement * speedMult,
             acceleration * Time.deltaTime);
 
+        rb.MovePosition(rb.position + _currentDisplacement * Time.deltaTime);
 
-        characterController.Move(_currentDisplacement * Time.deltaTime);
-
-        // apply gravity
-
-        if (!characterController.isGrounded)
-            _verticalSpeed -= gravity * Time.deltaTime;
-        else
-            _verticalSpeed = 0f;
-
-        _currentDisplacement.y = _verticalSpeed;
+        // // apply gravity
+        //
+        // if (!characterController.isGrounded)
+        //     _verticalSpeed -= gravity * Time.deltaTime;
+        // else
+        //     _verticalSpeed = 0f;
+        //
+        // _currentDisplacement.y = _verticalSpeed;
     }
 
     private void CheckCrouch() {
         float targetHeight = playerState.ShouldPlayerCrouch() ? crouchingHeight : standingHeight;
-        bodyHeight.localScale =
-            Vector3.Lerp(bodyHeight.localScale, new Vector3(1, targetHeight, 1), crouchingLerpSpeed);
-        bodyHeight.transform.localPosition = new Vector3(0, bodyHeight.localScale.y - standingHeight,
-            0);
+        body.localScale = Vector3.Lerp(body.localScale, new Vector3(1, targetHeight, 1), crouchingLerpSpeed);
+        body.transform.localPosition =
+            new Vector3(body.localPosition.x, body.localScale.y - standingHeight, body.localPosition.z);
     }
 
     public void Lock() {
