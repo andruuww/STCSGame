@@ -13,9 +13,7 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] [Range(0, 5)] private float crouchSpeed = 1f;
     [SerializeField] [Range(0, 5)] private float runSpeed = 3f;
     [SerializeField] [Range(0, 25)] private float acceleration = 13;
-    [SerializeField] [Range(0, 20)] private float gravity = 9.8f;
 
-    public Transform bodyHeight;
     public Transform body;
 
     public CapsuleCollider cc;

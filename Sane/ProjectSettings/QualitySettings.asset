@@ -213,7 +213,7 @@ QualitySettings:
     billboardsFaceCameraPosition: 1
     vSyncCount: 1
     realtimeGICPUUsage: 100
-    lodBias: 2
+    lodBias: 1
     maximumLODLevel: 0
     streamingMipmapsActive: 0
     streamingMipmapsAddAllCameras: 1
@@ -226,7 +226,7 @@ QualitySettings:
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    customRenderPipeline: {fileID: 11400000, guid: b06aaa5aa960e4826bfe01837024904a, type: 2}
+    customRenderPipeline: {fileID: 11400000, guid: bd5c8f9da4d5847918eb10f6f239c162, type: 2}
     excludedTargetPlatforms: []
   m_PerPlatformDefaultQuality:
     Android: 2

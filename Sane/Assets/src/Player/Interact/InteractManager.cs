@@ -17,6 +17,10 @@ public interface PickupInteractable : IInteractable {
 public interface UseInteractable : IInteractable {
 }
 
+public interface LightswitchInteractable : IInteractable {
+    void Interact();
+}
+
 public class InteractManager : MonoBehaviour {
     [SerializeField] private LayerMask interactLayer;
     [SerializeField] private Transform interactorSource;
@@ -33,7 +37,6 @@ public class InteractManager : MonoBehaviour {
     public InteractHandUI ui;
     private bool _isInteracting;
     private bool _isLerping;
-    private bool _isVisible = true;
 
     private PlayerStateManager _playerStateManager;
 
@@ -45,42 +48,36 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void Update() {
-        // print(_isLerping);
-        if (!_isInteracting) {
-            CalculateClosestInteractable(
-                out Collider closestCollider);
-
-            if (closestCollider is not null)
-                HandleUIChange(closestCollider);
-            else
-                HideUI();
-            lastCollider = closestCollider;
+        if (_isInteracting &&
+            Vector3.Distance(interactorSource.position, lastCollider.bounds.center) <= interactDistance) {
+            HandleInteract(lastCollider);
+            SetUIPos(lastCollider);
+            _isLerping = false;
         }
         else {
-            if (lastCollider is not null && Vector3.Distance(lastCollider.bounds.center, interactorSource.position) <
-                interactDistance) {
-                ShowUINoLerp(lastCollider);
+            CalculateClosestInteractable(out Collider closestCollider);
+            HandleInteract(closestCollider);
+            AlignCanvas();
+            if (closestCollider is null) {
+                ui.fadeOut(fadeTime);
+                SetUIPos(lastCollider);
+                _isLerping = false;
+                return;
             }
-            else {
-                HideUI();
-                lastCollider = null;
-            }
+
+            if (lastCollider is not null && closestCollider != lastCollider)
+                _isLerping = true;
+            else if (Vector3.Distance(ui.transform.position, CalculateUIPosition(closestCollider.bounds.center)) < 0.01)
+                _isLerping = false;
+
+            ui.fadeIn(fadeTime);
+            if (!_isLerping)
+                SetUIPos(closestCollider);
+            else
+                LerpUIPos(closestCollider);
+
+            lastCollider = closestCollider;
         }
-
-        HandleInteract(lastCollider);
-        AlignCanvas();
-    }
-
-    private void HandleUIChange(Collider closestCollider) {
-        if (!_isLerping && closestCollider != lastCollider)
-            _isLerping = true;
-        else if (Vector3.Distance(ui.transform.position, CalculateUIPosition(closestCollider.bounds.center)) <
-                 0.01f) _isLerping = false;
-
-        if (_isLerping)
-            ShowUI(closestCollider);
-        else
-            ShowUINoLerp(closestCollider);
     }
 
     private void AlignCanvas() {
@@ -88,15 +85,27 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void HandleInteract(Collider collider) {
-        if (collider is not null)
-            if (collider.gameObject.TryGetComponent(out DoorInteractable door))
-                if (_playerStateManager.IsInteractDown()) {
-                    ui.CloseHand();
+        if (collider is not null) {
+            if (collider.gameObject.TryGetComponent(out DoorInteractable door) &&
+                _playerStateManager.IsInteractDown()) {
+                ui.CloseHand();
+                _isInteracting = true;
+                _playerStateManager.LockCamera();
+                door.Interact(_playerStateManager);
+                return;
+            }
+
+            if (collider.gameObject.TryGetComponent(out LightswitchInteractable lightswitch) &&
+                _playerStateManager.IsInteractDown()) {
+                ui.CloseHand();
+                if (!_isInteracting) {
                     _isInteracting = true;
-                    _playerStateManager.LockCamera();
-                    door.Interact(_playerStateManager);
-                    return;
+                    lightswitch.Interact();
                 }
+
+                return;
+            }
+        }
 
         _isInteracting = false;
         _playerStateManager.UnlockCamera();
@@ -104,27 +113,15 @@ public class InteractManager : MonoBehaviour {
         ui.OpenHand();
     }
 
-    private void ShowUI(Collider closestCollider) {
-        Vector3 uiPos = CalculateUIPosition(closestCollider.bounds.center);
-        if (!_isVisible) {
-            ui.fadeIn(fadeTime);
-            ui.transform.position = uiPos;
-            _isVisible = true;
-        }
-
-        ui.transform.position =
-            Vector3.Lerp(ui.transform.position, uiPos,
-                Time.deltaTime * handSpeed);
-    }
-
-    private void ShowUINoLerp(Collider closestCollider) {
+    private void SetUIPos(Collider closestCollider) {
+        if (closestCollider is null) return;
         ui.transform.position = CalculateUIPosition(closestCollider.bounds.center);
     }
 
-    private void HideUI() {
-        if (_isVisible)
-            ui.fadeOut(fadeTime);
-        _isVisible = false;
+    private void LerpUIPos(Collider closestCollider) {
+        ui.transform.position =
+            Vector3.Lerp(ui.transform.position, CalculateUIPosition(closestCollider.bounds.center),
+                Time.deltaTime * handSpeed);
     }
 
     private void CalculateClosestInteractable(
@@ -160,7 +157,7 @@ public class InteractManager : MonoBehaviour {
 
     public Vector3 CalculateUIPosition(Vector3 obj) {
         Physics.Raycast(interactorSource.position, obj - interactorSource.position, out RaycastHit hit, interactLayer);
-        // Debug.DrawRay(interactorSource.position, obj - interactorSource.position, Color.red);
+        Debug.DrawRay(interactorSource.position, obj - interactorSource.position, Color.red);
         Vector3 pos = hit.point;
         pos = Vector3.MoveTowards(pos, interactorSource.position, uiOffset);
 
