@@ -132,7 +132,7 @@ public class RealisticCameraMovementController : MonoBehaviour {
     }
 
     private void SwayMotion(ref Vector3 rotation) {
-        rotation.z += playerState.GetMouseX() * cameraSwayOnLook;
+        rotation.z -= playerState.GetMouseX() * cameraSwayOnLook;
     }
 
 
