@@ -6,14 +6,14 @@ public class PlayerStateManager : MonoBehaviour {
     [SerializeField] private float groundedDistance = 0.5f;
     [SerializeField] private LayerMask groundLayer;
 
-    public PlayerMovement playerMovement;
+    public PlayerMovementManager playerMovement;
     public SmoothLook smoothLook;
 
     private PlayerInput _playerInput;
     private bool lockMovement;
 
     private void Awake() {
-        playerMovement = GetComponent<PlayerMovement>();
+        playerMovement = GetComponent<PlayerMovementManager>();
         smoothLook = GetComponent<SmoothLook>();
 
         _playerInput = new PlayerInput();
