@@ -7,14 +7,14 @@ public class PlayerStateManager : MonoBehaviour {
     [SerializeField] private LayerMask groundLayer;
 
     public PlayerMovementManager playerMovement;
-    public SmoothLook smoothLook;
+    public FlashlightLook smoothLook;
 
     private PlayerInput _playerInput;
     private bool lockMovement;
 
     private void Awake() {
         playerMovement = GetComponent<PlayerMovementManager>();
-        smoothLook = GetComponent<SmoothLook>();
+        smoothLook = GetComponent<FlashlightLook>();
 
         _playerInput = new PlayerInput();
         Application.targetFrameRate = 60;
@@ -49,8 +49,8 @@ public class PlayerStateManager : MonoBehaviour {
 
     // player interact getters --------------------------------------------------------------------------------------------
 
-    public bool IsInteractPress() {
-        return _playerInput.Interactions.InteractPress.triggered;
+    public bool IsFlashlightPress() {
+        return _playerInput.Interactions.Flashlight.triggered;
     }
 
     public bool IsInteractDown() {

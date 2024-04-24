@@ -62,12 +62,14 @@ public class InteractManager : MonoBehaviour {
                 ui.fadeOut(fadeTime);
                 SetUIPos(lastCollider);
                 _isLerping = false;
+                lastCollider = null;
                 return;
             }
 
             if (lastCollider is not null && closestCollider != lastCollider)
                 _isLerping = true;
-            else if (Vector3.Distance(ui.transform.position, CalculateUIPosition(closestCollider.bounds.center)) < 0.01)
+            else if (Vector3.Distance(ui.transform.position, CalculateUIPosition(closestCollider.bounds.center)) <
+                     0.01)
                 _isLerping = false;
 
             ui.fadeIn(fadeTime);
@@ -81,7 +83,7 @@ public class InteractManager : MonoBehaviour {
     }
 
     private void AlignCanvas() {
-        ui.transform.LookAt(interactorSource);
+        ui.transform.LookAt(Camera.main.transform);
     }
 
     private void HandleInteract(Collider collider) {
@@ -156,10 +158,11 @@ public class InteractManager : MonoBehaviour {
     }
 
     public Vector3 CalculateUIPosition(Vector3 obj) {
-        Physics.Raycast(interactorSource.position, obj - interactorSource.position, out RaycastHit hit, interactLayer);
-        Debug.DrawRay(interactorSource.position, obj - interactorSource.position, Color.red);
+        Physics.Raycast(Camera.main.transform.position, obj - Camera.main.transform.position, out RaycastHit hit,
+            interactLayer);
+        Debug.DrawRay(Camera.main.transform.position, obj - Camera.main.transform.position, Color.red);
         Vector3 pos = hit.point;
-        pos = Vector3.MoveTowards(pos, interactorSource.position, uiOffset);
+        pos = Vector3.MoveTowards(pos, Camera.main.transform.position, uiOffset);
 
         float noiseZ = Mathf.PerlinNoise(Time.time * shakeFrequency, 0) * shakeIntensity;
         float noiseY = Mathf.PerlinNoise(0, Time.time * shakeFrequency) * shakeIntensity;

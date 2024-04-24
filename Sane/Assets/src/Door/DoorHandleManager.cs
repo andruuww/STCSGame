@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DoorHandleManager : MonoBehaviour, DoorInteractable {
     [SerializeField] [Range(0, 360)] private float interactAngle = 90;
+    [SerializeField] private bool reverse;
     private Collider _collider;
 
     private DoorManager _doorManager;
@@ -13,6 +14,7 @@ public class DoorHandleManager : MonoBehaviour, DoorInteractable {
 
     public void Interact(PlayerStateManager playerStateManager) {
         float mouseY = playerStateManager.GetMouseY();
+        if (reverse) mouseY *= -1;
         _doorManager.RotateDoor(-mouseY);
     }
 

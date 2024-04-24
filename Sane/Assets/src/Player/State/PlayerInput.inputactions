@@ -186,7 +186,7 @@
             "id": "44334c07-60d7-4e1e-a8c3-dc1f7b091165",
             "actions": [
                 {
-                    "name": "InteractPress",
+                    "name": "Flashlight",
                     "type": "Button",
                     "id": "69299c10-7b5f-4a6d-9a73-fcb193f6180f",
                     "expectedControlType": "Button",
@@ -208,18 +208,18 @@
                 {
                     "name": "",
                     "id": "658b566c-45a7-4101-8901-dc4d9caddbac",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "InteractPress",
+                    "action": "Flashlight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "b2b94505-bfca-4e7e-9087-6fb8bb2a7959",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

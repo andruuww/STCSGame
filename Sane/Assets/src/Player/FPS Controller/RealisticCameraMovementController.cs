@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
 
 public class RealisticCameraMovementController : MonoBehaviour {
@@ -44,11 +45,15 @@ public class RealisticCameraMovementController : MonoBehaviour {
     [SerializeField] [Range(0, 120)] private float walkingFOV = 60f;
     [SerializeField] [Range(0, 120)] private float runningFOV = 75f;
 
+    [Header("Footstep Sounds")]
+    [SerializeField] private AudioClip[] footstepSounds;
+    [SerializeField] private AudioSource footstepAudioSource;
+
     [Header("Misc")]
     [SerializeField] [Range(0, 50)] private float resetSpeed = 5f;
-
     [SerializeField] private new Camera camera;
-    public PlayerStateManager playerState;
+    [SerializeField] private PlayerStateManager playerState;
+
     private float _currentAmpRot;
 
     private float _currentAmpTrans;
@@ -62,6 +67,8 @@ public class RealisticCameraMovementController : MonoBehaviour {
 
     private Vector3 _startPos;
     private Quaternion _startRot;
+
+    private bool stepped;
 
     private void Awake() {
         _startPos = camera.transform.localPosition;
@@ -111,6 +118,12 @@ public class RealisticCameraMovementController : MonoBehaviour {
 
             rotation.x += (footstepHeaviness +
                            footNoise * noiseAmp) * ampRot * 0.75f;
+
+            if (!stepped) footstepAudioSource.PlayOneShot(footstepSounds[Random.Range(0, footstepSounds.Length)]);
+            stepped = true;
+        }
+        else {
+            stepped = false;
         }
     }
 

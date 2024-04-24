@@ -208,7 +208,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             ""id"": ""44334c07-60d7-4e1e-a8c3-dc1f7b091165"",
             ""actions"": [
                 {
-                    ""name"": ""InteractPress"",
+                    ""name"": ""Flashlight"",
                     ""type"": ""Button"",
                     ""id"": ""69299c10-7b5f-4a6d-9a73-fcb193f6180f"",
                     ""expectedControlType"": ""Button"",
@@ -230,18 +230,18 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""658b566c-45a7-4101-8901-dc4d9caddbac"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""InteractPress"",
+                    ""action"": ""Flashlight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""b2b94505-bfca-4e7e-9087-6fb8bb2a7959"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -266,7 +266,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movement_Crouch = m_Movement.FindAction("Crouch", throwIfNotFound: true);
         // Interactions
         m_Interactions = asset.FindActionMap("Interactions", throwIfNotFound: true);
-        m_Interactions_InteractPress = m_Interactions.FindAction("InteractPress", throwIfNotFound: true);
+        m_Interactions_Flashlight = m_Interactions.FindAction("Flashlight", throwIfNotFound: true);
         m_Interactions_InteractDown = m_Interactions.FindAction("InteractDown", throwIfNotFound: true);
     }
 
@@ -453,13 +453,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     // Interactions
     private readonly InputActionMap m_Interactions;
     private List<IInteractionsActions> m_InteractionsActionsCallbackInterfaces = new List<IInteractionsActions>();
-    private readonly InputAction m_Interactions_InteractPress;
+    private readonly InputAction m_Interactions_Flashlight;
     private readonly InputAction m_Interactions_InteractDown;
     public struct InteractionsActions
     {
         private @PlayerInput m_Wrapper;
         public InteractionsActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
-        public InputAction @InteractPress => m_Wrapper.m_Interactions_InteractPress;
+        public InputAction @Flashlight => m_Wrapper.m_Interactions_Flashlight;
         public InputAction @InteractDown => m_Wrapper.m_Interactions_InteractDown;
         public InputActionMap Get() { return m_Wrapper.m_Interactions; }
         public void Enable() { Get().Enable(); }
@@ -470,9 +470,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_InteractionsActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_InteractionsActionsCallbackInterfaces.Add(instance);
-            @InteractPress.started += instance.OnInteractPress;
-            @InteractPress.performed += instance.OnInteractPress;
-            @InteractPress.canceled += instance.OnInteractPress;
+            @Flashlight.started += instance.OnFlashlight;
+            @Flashlight.performed += instance.OnFlashlight;
+            @Flashlight.canceled += instance.OnFlashlight;
             @InteractDown.started += instance.OnInteractDown;
             @InteractDown.performed += instance.OnInteractDown;
             @InteractDown.canceled += instance.OnInteractDown;
@@ -480,9 +480,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
 
         private void UnregisterCallbacks(IInteractionsActions instance)
         {
-            @InteractPress.started -= instance.OnInteractPress;
-            @InteractPress.performed -= instance.OnInteractPress;
-            @InteractPress.canceled -= instance.OnInteractPress;
+            @Flashlight.started -= instance.OnFlashlight;
+            @Flashlight.performed -= instance.OnFlashlight;
+            @Flashlight.canceled -= instance.OnFlashlight;
             @InteractDown.started -= instance.OnInteractDown;
             @InteractDown.performed -= instance.OnInteractDown;
             @InteractDown.canceled -= instance.OnInteractDown;
@@ -517,7 +517,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     }
     public interface IInteractionsActions
     {
-        void OnInteractPress(InputAction.CallbackContext context);
+        void OnFlashlight(InputAction.CallbackContext context);
         void OnInteractDown(InputAction.CallbackContext context);
     }
 }
